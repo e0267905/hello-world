@@ -68,5 +68,5 @@ for i in range(5000):
     jsonPayload = json.dumps(jsonPayload)
     print(jsonPayload)
     myDeviceShadow.shadowUpdate(jsonPayload,myShadowUpdateCallback, 5)
-    time.sleep(5)
+    time.sleep(1)
     

@@ -1,0 +1,126 @@
+//Arduino UNO script for personal IoT project
+
+#ifndef dht11_h
+#define dht11_h
+
+#if defined(ARDUINO) && (ARDUINO >= 100)
+#include <Arduino.h>
+#else
+#include <WProgram.h>
+#endif
+
+#define DHT11LIB_VERSION "0.4.1"
+
+#define DHTLIB_OK        0
+#define DHTLIB_ERROR_CHECKSUM -1
+#define DHTLIB_ERROR_TIMEOUT  -2
+#define S1 3
+#define S0 2
+#define S3 6
+#define S2 5
+#define sensorOut 4
+
+class dht11
+{
+public:
+  int read(int pin);
+  int humidity;
+  int temperature;
+
+};
+#endif
+//
+// END OF FILE
+//
+#define DHT11PIN 13
+
+dht11 DHT11;
+
+
+  // Stores frequency read by the photodiodes
+  int redFrequency = 0;
+  int greenFrequency = 0;
+  int blueFrequency = 0;
+
+  int sensor_pin = A0;
+
+  int output_value ;
+
+
+void setup()
+{
+ Serial.begin(9600);
+ Serial.print("Humidity (%): Temperature (C):   R   G   B  Moisture (%)");
+ // Setting the outputs
+  pinMode(S0, OUTPUT);
+  pinMode(S1, OUTPUT);
+  pinMode(S2, OUTPUT);
+  pinMode(S3, OUTPUT);
+  
+  // Setting the sensorOut as an input
+  pinMode(sensorOut, INPUT);  
+  // Setting frequency scaling to 20%  
+  digitalWrite(S0,HIGH);
+  digitalWrite(S1,LOW);  
+   // Begins serial communication 
+  Serial.begin(9600);
+}
+
+void loop()
+{
+  Serial.println();
+
+  int chk = DHT11.read(DHT11PIN);
+
+  Serial.print((float)DHT11.humidity,2);
+  Serial.print("         ");
+  Serial.print((float)DHT11.temperature,2);
+  delay(100);
+  // Setting RED (R) filtered photodiodes to be read
+  digitalWrite(S2,LOW);
+  digitalWrite(S3,LOW); 
+  
+  // Reading the output frequency
+  redFrequency = pulseIn(sensorOut, LOW);
+  
+   // Printing the RED (R) value
+  //Serial.print("R = ");
+  Serial.print("              ");
+  Serial.print(redFrequency);  
+  delay(100);
+  
+  // Setting GREEN (G) filtered photodiodes to be read
+  digitalWrite(S2,HIGH);
+  digitalWrite(S3,HIGH);
+  
+  // Reading the output frequency
+  greenFrequency = pulseIn(sensorOut, LOW);
+  
+  // Printing the GREEN (G) value  
+  //Serial.print(" G = ");
+  Serial.print("  ");
+  Serial.print(greenFrequency);  
+  delay(100);
+ 
+  // Setting BLUE (B) filtered photodiodes to be read
+  digitalWrite(S2,LOW);
+  digitalWrite(S3,HIGH);
+  
+  // Reading the output frequency
+  blueFrequency = pulseIn(sensorOut, LOW);
+  
+  // Printing the BLUE (B) value 
+  //Serial.print(" B = ");
+  Serial.print("  ");
+  Serial.print(blueFrequency);  
+  delay(100);
+
+  output_value= analogRead(sensor_pin);
+
+  output_value = map(output_value,550,0,0,100);
+  Serial.print("     ");
+  Serial.println(output_value);
+
+  delay(1000);
+
+}
